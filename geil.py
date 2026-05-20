@@ -85,6 +85,11 @@ if (!Recognition) {
                 antwortText = "Hallo wie kann ich dir helfen";
                 boxFarbe = "#d4edda"; // Grün
                 textFarbe = "#155724";
+            // Deine Befehle direkt in JavaScript geprüft
+            if (gehoert.includes("schule")) {
+                antwortText = "Hölle gefunden 48°27'22.1"N 12°21'36.0"E";
+                boxFarbe = "#f8d7da"; // Rot
+                textFarbe = "#721c24";                
             } else if (gehoert.includes("fick dich")) {
                 antwortText = "dich auch";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
