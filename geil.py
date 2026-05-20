@@ -104,7 +104,11 @@ if (!Recognition) {
             } else if (gehoert.includes("traubenzucker")) {
                 antwortText = "schnupf mehr";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
-                textFarbe = "#856404";                
+                textFarbe = "#856404";    
+            } else if (gehoert.includes("sieg heil")) {
+                antwortText = "heil hitler";
+                boxFarbe = "#fff3cd"; // Gelb/Orange
+                textFarbe = "#856404";                   
             } else if (gehoert.includes("schule")) { // DEIN NEUER BEFEHL HIER
                 antwortText = "Hölle gefunden 48°27'22.2 Nord 12°21'35.9 Ost";
                 boxFarbe = "#f8d7da"; // Rot
