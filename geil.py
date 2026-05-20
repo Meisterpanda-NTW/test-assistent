@@ -3,9 +3,8 @@ import streamlit as st
 st.set_page_config(page_title="Garmin Assistent", page_icon="🎙️")
 st.title("🎙️ Garmin Echtzeit-Assistent")
 
-# Holt den finalen Befehl über die URL
-query_params = st.query_params
-befehl_text = query_params.get("befehl", "").lower()
+# Das versteckte Textfeld, das den Befehl vom JavaScript empfängt
+befehl_text = st.text_input("Versteckte Schnittstelle", key="voice_input", label_visibility="collapsed").lower()
 
 def execute_js(js_code):
     st.components.v1.html(f"<script>{js_code}</script>", height=0, width=0)
@@ -53,37 +52,44 @@ if (!Recognition) {
         const gehoert = e.results[0][0].transcript.toLowerCase();
         
         // STUFE 1: Wartet auf eines der Aktivierungswörter
-        if (!warteAufBefehl) {
+        if (!warp = !warteAufBefehl) {
             if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) {
                 machPiep(); 
                 warteAufBefehl = true;
                 status.innerText = "👂 Ich höre... Sprich jetzt deinen Befehl!";
                 btn.style.backgroundColor = "#2baf2b"; 
-                
-                // Erzwingt das Beenden, damit onend sofort Stufe 2 startet
                 rec.stop(); 
             }
         } 
-        // STUFE 2: Aktivierung war erfolgreich, verarbeite den echten Befehl
+        // STUFE 2: Aktivierung war erfolgreich, trage den Text direkt ins Streamlit-Feld ein
         else {
-            status.innerText = "Verarbeite Befehl...";
+            status.innerText = "Verstanden: " + gehoert;
             warteAufBefehl = false; 
             
-            const url = new URL(window.location.href);
-            url.searchParams.set("befehl", gehoert);
-            window.parent.location.href = url.toString();
+            // Sucht das Streamlit-Textfeld auf der Seite
+            const inputs = window.parent.document.getElementsByTagName('input');
+            if (inputs.length > 0) {
+                inputs[0].value = gehoert;
+                inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+                inputs[0].dispatchEvent(new Event('change', { bubbles: true }));
+                
+                // Simuliert das Absenden (Enter-Taste)
+                setTimeout(() => {
+                    const form = inputs[0].form;
+                    if (form) form.requestSubmit();
+                }, 50);
+            }
         }
     };
     
-    // Automatischer Neustart-Schutz
     rec.onend = () => {
-        if (aktivGeklickt && !status.innerText.includes("Verarbeite")) {
+        if (aktivGeklickt && !status.innerText.includes("Verstanden")) {
             try { rec.start(); } catch(e) {}
         }
     };
 
     rec.onerror = () => {
-        if (aktivGeklickt && !status.innerText.includes("Verarbeite")) {
+        if (aktivGeklickt && !status.innerText.includes("Verstanden")) {
             try { rec.start(); } catch(e) {}
         }
     };
