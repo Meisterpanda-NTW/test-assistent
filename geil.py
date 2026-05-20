@@ -1,54 +1,67 @@
 import streamlit as st
-from streamlit_mic_recorder import speech_to_text # Das neue Mikrofon-Plugin
 
 st.set_page_config(page_title="Garmin Assistent", page_icon="🎙️")
-st.title("🎙️ Garmin Sprachassistent")
+st.title("🎙️ Garmin Echtzeit-Assistent")
 
-# Das JavaScript-Element für Ton und Sprache
-def browser_audio_trigger(js_code):
+# Textfeld als Empfänger für das JavaScript
+text = st.text_input("Sprachsteuerung aktiv (Schnittstelle)", key="voice_input").lower()
+
+def execute_js(js_code):
     st.components.v1.html(f"<script>{js_code}</script>", height=0, width=0)
 
-st.write("Klicke auf das Mikrofon und sprich deinen Befehl:")
+# Der magische HTML/JavaScript-Button für Echtzeit-Erkennung im Browser
+st.write("Klicke auf 'Zuhören' und sprich direkt los:")
+start_button = st.button("🎙️ Zuhören starten")
 
-# Hier ist der neue Mikrofon-Button!
-text = speech_to_text(
-    language='de',
-    start_prompt="🎙️ Aufnahme starten",
-    stop_prompt="🛑 Stopp & Senden",
-    just_once=True,
-    key='audio_in'
-)
+if start_button:
+    js_recognize = """
+    const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!Recognition) {
+        alert("Dein Browser unterstützt keine Sprachsteuerung. Nutze Safari auf dem iPad oder Chrome auf dem PC.");
+    } else {
+        const rec = new Recognition();
+        rec.lang = 'de-DE';
+        rec.interimResults = false;
+        rec.maxAlternatives = 1;
+        
+        rec.start();
+        
+        rec.onresult = (e) => {
+            const resultText = e.results[0][0].transcript;
+            // Sucht das Textfeld auf der Streamlit-Seite und trägt den Text blitzschnell ein
+            const inputs = window.parent.document.getElementsByTagName('input');
+            if(inputs.length > 0) {
+                inputs[0].value = resultText;
+                inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
+                inputs[0].dispatchEvent(new Event('change', { bubbles: true }));
+            }
+        };
+    }
+    """
+    execute_js(js_recognize)
 
-# Falls etwas gesprochen wurde, verarbeite es
+# Verarbeitung der Befehle
 if text:
-    text_klein = text.lower()
     st.write(f"**Gehört:** '{text}'")
-
-    # 1. Aktivierungswort
-    if "okay garmin" in text_klein:
-        js_beep = "const ctx = new AudioContext(); const osc = ctx.createOscillator(); osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 300);"
-        browser_audio_trigger(js_beep)
-
-    # 2. Befehle prüfen
     antwort = ""
-    if "hallo" in text_klein:
+
+    if "okay garmin" in text:
+        js_beep = "const ctx = new AudioContext(); const osc = ctx.createOscillator(); osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 300);"
+        execute_js(js_beep)
+
+    if "hallo" in text:
         antwort = "Hallo wie kann ich dir helfen"
         st.success(antwort)
-        
-    elif "fick dich" in text_klein:
+    elif "fick dich" in text:
         antwort = "dich auch"
         st.warning(antwort)
-        
-    elif "lukas" in text_klein:
+    elif "lukas" in text:
         antwort = "nein nicht lukas"
         st.error(antwort)
-        
-    elif "beenden" in text_klein:
-        antwort = "programm wird beendet"
+    elif "beenden" in text:
         st.empty()
         st.write("### 🛑 Assistent wurde beendet.")
 
-    # Wenn eine Antwort da ist, spricht der Browser (iPad/Handy) sie laut aus
     if antwort:
         js_speech = f"const speech = new SpeechSynthesisUtterance('{antwort}'); speech.lang = 'de-DE'; window.speechSynthesis.speak(speech);"
-        browser_audio_trigger(js_speech)
+        execute_js(js_speech)
