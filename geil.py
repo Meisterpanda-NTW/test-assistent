@@ -26,17 +26,25 @@ if start_button:
         rec.start();
         
         rec.onresult = (e) => {
-            const resultText = e.results[0].transcript; // Fehler korrigiert [0] hinzugefügt
+            // Hier lag der Fehler: Der Pfad muss genau so heißen!
+            const resultText = e.results[0][0].transcript; 
             
-            // Sucht das Textfeld auf der Streamlit-Seite und trägt den Text ein
+            // Sucht das Textfeld in der Streamlit-Webseite
             const inputs = window.parent.document.getElementsByTagName('input');
             if(inputs.length > 0) {
-                inputs[0].value = resultText; // Fehler korrigiert [0] hinzugefügt
+                // Trägt den echten Text ein statt 'undefined'
+                inputs[0].value = resultText; 
                 inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
                 inputs[0].dispatchEvent(new Event('change', { bubbles: true }));
                 
-                // Simuliert die Enter-Taste, damit Streamlit sofort aufwacht
-                inputs[0].form.dispatchEvent(new Event('submit', { bubbles: true }));
+                // Zwingt die Seite absolut sicher zum Neuladen mit dem neuen Text
+                setTimeout(() => {
+                    inputs[0].blur();
+                    inputs[0].focus();
+                    // Simuliert das Absenden des Formulars
+                    const form = inputs[0].form;
+                    if (form) form.requestSubmit();
+                }, 100);
             }
         };
     }
@@ -48,13 +56,10 @@ if text:
     st.write(f"**Gehört:** '{text}'")
     antwort = ""
 
-    # Wir nutzen "in text", falls du z.B. "okay garmin hallo" sagst
     if "okay garmin" in text:
         js_beep = "const ctx = new AudioContext(); const osc = ctx.createOscillator(); osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 300);"
         execute_js(js_beep)
-    if "okay gar" in text:
-        js_beep = "const ctx = new AudioContext(); const osc = ctx.createOscillator(); osc.connect(ctx.destination); osc.start(); setTimeout(() => osc.stop(), 300);"
-        execute_js(js_beep)
+
     if "hallo" in text:
         antwort = "Hallo wie kann ich dir helfen"
         st.success(antwort)
