@@ -94,7 +94,7 @@ if (!Recognition) {
                 boxFarbe = "#f8d7da"; // Rot
                 textFarbe = "#721c24";
             } else if (gehoert.includes("schule")) { // DEIN NEUER BEFEHL HIER
-                antwortText = "Hölle gefunden";
+                antwortText = "Hölle gefunden 48°27'22.2N 12°21'35.9E";
                 boxFarbe = "#f8d7da"; // Rot
                 textFarbe = "#721c24";
             } else if (gehoert.includes("beenden")) {
