@@ -51,7 +51,7 @@ if (!Recognition) {
     btn.addEventListener('click', () => {
         aktivGeklickt = true;
         try { rec.start(); } catch(e) {}
-        status.innerText = "💤 Warte auf Aktivierung... (Sage 'Okay Garmin' oder 'Okay Gar')";
+        status.innerText = "💤 Warte auf Aktivierung... (Sage 'Okay Garmin')";
         btn.style.backgroundColor = "#ffa500"; 
         antwortBox.style.display = "none";
     });
