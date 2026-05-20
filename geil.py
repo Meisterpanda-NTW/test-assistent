@@ -60,7 +60,7 @@ if (!Recognition) {
         const gehoert = e.results[0][0].transcript.toLowerCase().trim();
         
         // STUFE 1: Wartet auf das Aktivierungswort
-        if (!warp = !warteAufBefehl) {
+        if (!warteAufBefehl) {
             if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) {
                 machPiep(); // Macht NUR den Piepton
                 warteAufBefehl = true;
