@@ -32,8 +32,8 @@ if (!Recognition) {
     rec.interimResults = false;
     
     let warteAufBefehl = false;
+    let aktivGeklickt = false;
 
-    // Funktion für den Piepton
     function machPiep() {
         const ctx = new AudioContext();
         const osc = ctx.createOscillator();
@@ -43,48 +43,48 @@ if (!Recognition) {
     }
 
     btn.addEventListener('click', () => {
-        rec.start();
-        status.innerText = "💤 Warte auf Aktivierung... (Sage 'Okay Garmin')";
-        btn.style.backgroundColor = "#ffa500"; // Orange für Standby
+        aktivGeklickt = true;
+        try { rec.start(); } catch(e) {}
+        status.innerText = "💤 Warte auf Aktivierung... (Sage 'Okay Garmin' oder 'Okay Gar')";
+        btn.style.backgroundColor = "#ffa500"; 
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results.transcript.toLowerCase();
+        const gehoert = e.results[0][0].transcript.toLowerCase();
         
-        // STUFE 1: Wartet nur auf das Aktivierungswort
+        // STUFE 1: Wartet auf eines der Aktivierungswörter
         if (!warteAufBefehl) {
-            if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin")) {
-                machPiep(); // Spielt SOFORT den Ton ab
+            if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) {
+                machPiep(); 
                 warteAufBefehl = true;
-                status.innerText = "👂 Ich höre zu... Sprich jetzt deinen Befehl!";
-                btn.style.backgroundColor = "#2baf2b"; // Grün für aktives Zuhören
+                status.innerText = "👂 Ich höre... Sprich jetzt deinen Befehl!";
+                btn.style.backgroundColor = "#2baf2b"; 
                 
-                // Sofort weiterhören für den Befehl
-                setTimeout(() => { rec.start(); }, 300);
-            } else {
-                // Nichts Relevantes gehört -> Weiter auf Garmin warten
-                setTimeout(() => { rec.start(); }, 300);
+                // Erzwingt das Beenden, damit onend sofort Stufe 2 startet
+                rec.stop(); 
             }
         } 
-        // STUFE 2: Aktivierung war erfolgreich, jetzt wird der Befehl verarbeitet
+        // STUFE 2: Aktivierung war erfolgreich, verarbeite den echten Befehl
         else {
-            status.innerText = "Verarbeite Befehl: " + gehoert;
-            warteAufBefehl = false; // Zurücksetzen für das nächste Mal
+            status.innerText = "Verarbeite Befehl...";
+            warteAufBefehl = false; 
             
-            // Schickt den Befehl an Python weiter
             const url = new URL(window.location.href);
             url.searchParams.set("befehl", gehoert);
             window.parent.location.href = url.toString();
         }
     };
     
-    // Automatisch neu starten, wenn der Nutzer aufhört zu reden oder Stille herrscht
-    rec.onerror = () => { 
-        setTimeout(() => { rec.start(); }, 300); 
+    // Automatischer Neustart-Schutz
+    rec.onend = () => {
+        if (aktivGeklickt && !status.innerText.includes("Verarbeite")) {
+            try { rec.start(); } catch(e) {}
+        }
     };
-    rec.onend = () => { 
-        if (!status.innerText.includes("Verarbeite")) {
-            setTimeout(() => { rec.start(); }, 300); 
+
+    rec.onerror = () => {
+        if (aktivGeklickt && !status.innerText.includes("Verarbeite")) {
+            try { rec.start(); } catch(e) {}
         }
     };
 }
