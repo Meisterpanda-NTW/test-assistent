@@ -3,8 +3,8 @@ import streamlit as st
 st.set_page_config(page_title="Garmin Assistent", page_icon="🎙️")
 st.title("🎙️ Garmin Echtzeit-Assistent")
 
-# Das versteckte Textfeld, das den Befehl vom JavaScript empfängt
-befehl_text = st.text_input("Versteckte Schnittstelle", key="voice_input", label_visibility="collapsed").lower()
+# Das Textfeld empfängt den Text – wir machen es unsichtbar, damit es schick aussieht
+befehl_text = st.text_input("Schnittstelle", key="voice_input", label_visibility="collapsed").lower()
 
 def execute_js(js_code):
     st.components.v1.html(f"<script>{js_code}</script>", height=0, width=0)
@@ -52,7 +52,7 @@ if (!Recognition) {
         const gehoert = e.results[0][0].transcript.toLowerCase();
         
         // STUFE 1: Wartet auf eines der Aktivierungswörter
-        if (!warp = !warteAufBefehl) {
+        if (!warteAufBefehl) {
             if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) {
                 machPiep(); 
                 warteAufBefehl = true;
