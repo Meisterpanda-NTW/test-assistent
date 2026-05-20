@@ -3,13 +3,7 @@ import streamlit as st
 st.set_page_config(page_title="Garmin Assistent", page_icon="🎙️")
 st.title("🎙️ Garmin Echtzeit-Assistent")
 
-# Das Textfeld empfängt den Text – wir machen es unsichtbar, damit es schick aussieht
-befehl_text = st.text_input("Schnittstelle", key="voice_input", label_visibility="collapsed").lower()
-
-def execute_js(js_code):
-    st.components.v1.html(f"<script>{js_code}</script>", height=0, width=0)
-
-# Das intelligente 2-Stufen-Sprachsystem im Browser
+# Das intelligente 2-Stufen-Sprachsystem direkt als HTML/JavaScript-Komponente
 html_system = """
 <div style="text-align: center; margin-bottom: 20px;">
     <button id="mic-btn" style="background-color: #ff4b4b; color: white; border: none; padding: 12px 24px; font-size: 16px; border-radius: 8px; cursor: pointer; font-weight: bold; width: 250px;">
@@ -61,24 +55,13 @@ if (!Recognition) {
                 rec.stop(); 
             }
         } 
-        // STUFE 2: Aktivierung war erfolgreich, trage den Text direkt ins Streamlit-Feld ein
+        // STUFE 2: Aktivierung war erfolgreich
         else {
             status.innerText = "Verstanden: " + gehoert;
             warteAufBefehl = false; 
             
-            // Sucht das Streamlit-Textfeld auf der Seite
-            const inputs = window.parent.document.getElementsByTagName('input');
-            if (inputs.length > 0) {
-                inputs[0].value = gehoert;
-                inputs[0].dispatchEvent(new Event('input', { bubbles: true }));
-                inputs[0].dispatchEvent(new Event('change', { bubbles: true }));
-                
-                // Simuliert das Absenden (Enter-Taste)
-                setTimeout(() => {
-                    const form = inputs[0].form;
-                    if (form) form.requestSubmit();
-                }, 50);
-            }
+            // Der sichere Streamlit-Kanal: Sendet den Text direkt als Event an das Hauptfenster
+            window.parent.postMessage({type: 'streamlit:set_component_value', value: gehoert}, '*');
         }
     };
     
@@ -97,27 +80,39 @@ if (!Recognition) {
 </script>
 """
 
-# HTML-Element anzeigen
-st.components.v1.html(html_system, height=110)
+# Holt sich den Text über den absolut sicheren Nachrichten-Kanal
+# html_element speichert jetzt direkt das Ergebnis aus dem JavaScript!
+befehl_text = st.components.v1.html(html_system, height=110)
 
-# Verarbeitung der Befehle in Python
-if befehl_text:
-    st.write(f"**Verarbeiteter Befehl:** '{befehl_text}'")
+# Da st.components.v1.html den Rückgabewert nicht direkt anzeigt, 
+# nutzen wir einen kleinen Kniff über die Streamlit Session State Steuerung:
+if befehl_text and "voice_data" not in st.session_state:
+    st.session_state.voice_data = befehl_text
+
+# Verarbeitung der Befehle in Python (Vollkommen ohne Textfeld-Zwang)
+if "voice_data" in st.session_state and st.session_state.voice_data:
+    text_aktuell = st.session_state.voice_data
+    st.write(f"**Verarbeiteter Befehl:** '{text_aktuell}'")
     antwort = ""
 
-    if "hallo" in befehl_text:
+    if "hallo" in text_aktuell:
         antwort = "Hallo wie kann ich dir helfen"
         st.success(antwort)
-    elif "fick dich" in befehl_text:
+    elif "fick dich" in text_aktuell:
         antwort = "dich auch"
         st.warning(antwort)
-    elif "lukas" in befehl_text:
+    elif "lukas" in text_aktuell:
         antwort = "nein nicht lukas"
         st.error(antwort)
-    elif "beenden" in befehl_text:
+    elif "beenden" in text_aktuell:
+        st.session_state.voice_data = ""
         st.empty()
         st.write("### 🛑 Assistent wurde beendet.")
 
     if antwort:
-        js_speech = f"const speech = new SpeechSynthesisUtterance('{antwort}'); speech.lang = 'de-DE'; window.speechSynthesis.speak(speech);"
-        execute_js(js_speech)
+        # Antwort im Browser laut vorlesen lassen
+        js_speech = f"<script>const speech = new SpeechSynthesisUtterance('{antwort}'); speech.lang = 'de-DE'; window.speechSynthesis.speak(speech);</script>"
+        st.components.v1.html(js_speech, height=0, width=0)
+        
+    # Text nach der Verarbeitung leeren, damit er nicht in Endlosschleife spricht
+    st.session_state.voice_data = ""
