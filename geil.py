@@ -97,6 +97,10 @@ if (!Recognition) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
                 textFarbe = "#856404";
+            } else if (gehoert.includes("f*** deine mutter")) {
+                antwortText = "deine auch";
+                boxFarbe = "#fff3cd"; // Gelb/Orange
+                textFarbe = "#856404";                
             } else if (gehoert.includes("traubenzucker")) {
                 antwortText = "schnupf mehr";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
