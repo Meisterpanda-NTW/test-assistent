@@ -57,7 +57,7 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results[0][0].transcript.toLowerCase().trim();
+        const gehoert = e.results[0][0].transcript.toLowerCase();
         
         // STUFE 1: Wartet auf das Aktivierungswort
         if (!warteAufBefehl) {
@@ -85,17 +85,16 @@ if (!Recognition) {
                 antwortText = "Hallo wie kann ich dir helfen";
                 boxFarbe = "#d4edda"; // Grün
                 textFarbe = "#155724";
-            // Deine Befehle direkt in JavaScript geprüft
-            } else if (gehoert.includes("schule")) {
-                antwortText = "Hölle gefunden 48°27'22.1"N 12°21'36.0"E";
-                boxFarbe = "#f8d7da"; // Rot
-                textFarbe = "#721c24";                
             } else if (gehoert.includes("fick dich")) {
                 antwortText = "dich auch";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
                 textFarbe = "#856404";
             } else if (gehoert.includes("lukas")) {
                 antwortText = "nein nicht lukas";
+                boxFarbe = "#f8d7da"; // Rot
+                textFarbe = "#721c24";
+            } else if (gehoert.includes("schule")) { // DEIN NEUER BEFEHL HIER
+                antwortText = "Hölle gefunden";
                 boxFarbe = "#f8d7da"; // Rot
                 textFarbe = "#721c24";
             } else if (gehoert.includes("beenden")) {
