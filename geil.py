@@ -8,13 +8,13 @@ st.title("🎙️ Garmin Echtzeit-Assistent")
 # FUNKTION: Wir wandeln die duel.mp3 in einen unblockierbaren Text-Stream um
 def get_audio_base64():
     if os.path.exists("duel.mp3"):
-        with open("duel.mp3", "rb") as f:
+        with open(dateiname, "rb") as f:
             data = f.read()
             return base64.b64encode(data).decode()
     return ""
-
-audio_base64 = get_audio_base64()
-
+# HIER LÄDT PYTHON JETZT BEIDE LIEDER:
+duel_base64 = get_audio_base64("duel.mp3")
+cantina_base64 = get_audio_base64("cantina song.mp3")
 # Das hocheffiziente Sprachsystem komplett als ein HTML/JavaScript-Block
 html_reine_web_app = f"""
 <div style="text-align: center; margin-bottom: 20px;">
@@ -84,17 +84,32 @@ if (!Recognition) {{
     function spieleEchtesDuelOfFates() {{
         window.speechSynthesis.cancel();
         
-        const base64Data = "{audio_base64}";
-        if (base64Data.length > 0) {{
+    // LIED 1: Duel of the Fates (Geändert auf duel_base64!)
+    function spieleEchtesDuelOfFates() {
+        window.speechSynthesis.cancel();
+        const base64Data = "{duel_base64}"; 
+        if (base64Data.length > 0) {
             audioPlayer.src = "data:audio/mp3;base64," + base64Data;
             audioPlayer.volume = 0.5;
-            audioPlayer.play().catch(e => {{
-                status.innerText = "Fehler beim Abspielen des Musik-Streams.";
-            }});
-        }} else {{
-            status.innerText = "Fehler: Die Datei 'duel.mp3' wurde auf dem Server nicht gefunden.";
-        }}
-    }}
+            audioPlayer.play().catch(e => {});
+        } else {
+            status.innerText = "Fehler: 'duel.mp3' fehlt auf dem Server.";
+        }
+    }
+
+    // LIED 2: Cantina Band Song
+    function spieleCantinaSong() {
+        window.speechSynthesis.cancel();
+        const base64Data = "{cantina_base64}";
+        if (base64Data.length > 0) {
+            audioPlayer.src = "data:audio/mp3;base64," + base64Data;
+            audioPlayer.volume = 0.5;
+            audioPlayer.play().catch(e => {});
+        } else {
+            status.innerText = "Fehler: 'cantina.mp3' fehlt auf dem Server.";
+        }
+    }
+
 
     function sprich(text) {{
         window.speechSynthesis.cancel(); 
@@ -165,6 +180,12 @@ if (!Recognition) {{
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
                 spieleEchtesDuelOfFates(); 
+            } else if (gehoert.includes("cantina") || gehoert.includes("bar")) { 
+                antwortText = "starte Episode 4.";
+                boxFarbe = "#fff3cd"; // Gelbe Box
+                textFarbe = "#856404";
+                spieleCantinaBand(); // Startet dein zweites Lied!
+
             }} else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {{
                 antwortText = "Musik gestoppt, programm wird beendet";
                 boxFarbe = "#d1ecf1";
