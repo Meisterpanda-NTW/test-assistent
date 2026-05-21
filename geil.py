@@ -20,7 +20,6 @@ const btn = document.getElementById('mic-btn');
 const status = document.getElementById('status');
 const antwortBox = document.getElementById('antwort-box');
 
-// Aktiviert die Spracherkennung (auch für Safari auf iOS/iPad)
 const Recognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (!Recognition) {
@@ -31,11 +30,9 @@ if (!Recognition) {
     rec.interimResults = false;
     rec.maxAlternatives = 1;
 
-    // Trickst Safari aus, um die Audio-Ausgabe auf Apple-Geräten vorzubereiten
     let siriStimme = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(siriStimme);
 
-    // 1. Funktion für den Aktivierungs-Piepton
     function machPiep() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -44,7 +41,6 @@ if (!Recognition) {
         setTimeout(() => osc.stop(), 200);
     }
 
-    // 2. FUNKTION A: Der Star Wars Imperial March
     function spieleStarWars() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
@@ -68,28 +64,18 @@ if (!Recognition) {
         });
     }
 
-    // 3. NEUE FUNKTION B: Duel of the Fates (Hauptmotiv in E-Moll)
     function spieleDuelOfFates() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        // Das unverkennbare, schnelle Ostinato-Thema
         const melodie = [
-            {f: 329.63, d: 0.2},  // E
-            {f: 349.23, d: 0.2},  // F
-            {f: 329.63, d: 0.2},  // E
-            {f: 293.66, d: 0.2},  // D
-            {f: 329.63, d: 0.2},  // E
-            {f: 261.63, d: 0.2},  // C
-            {f: 293.66, d: 0.2},  // D
-            {f: 246.94, d: 0.2},  // H
-            {f: 329.63, d: 0.4},  // E (länger)
-            {f: 392.00, d: 0.4},  // G
-            {f: 329.63, d: 0.6}   // E (Ausklang)
+            {f: 329.63, d: 0.2}, {f: 349.23, d: 0.2}, {f: 329.63, d: 0.2}, {f: 293.66, d: 0.2},
+            {f: 329.63, d: 0.2}, {f: 261.63, d: 0.2}, {f: 293.66, d: 0.2}, {f: 246.94, d: 0.2},
+            {f: 329.63, d: 0.4}, {f: 392.00, d: 0.4}, {f: 329.63, d: 0.6}
         ];
         let startZeit = ctx.currentTime;
         melodie.forEach((note) => {
             const osc = ctx.createOscillator();
             const gainNode = ctx.createGain();
-            osc.type = 'triangle'; // Klingt etwas choraler/breiter
+            osc.type = 'triangle';
             osc.frequency.value = note.f;
             gainNode.gain.setValueAtTime(0.3, startZeit);
             gainNode.gain.exponentialRampToValueAtTime(0.01, startZeit + note.d);
@@ -97,12 +83,10 @@ if (!Recognition) {
             gainNode.connect(ctx.destination);
             osc.start(startZeit);
             osc.stop(startZeit + note.d);
-            // Kürzere Pausen für den schnellen, treibenden Rhythmus
             startZeit += note.d + 0.02; 
         });
     }
 
-    // 4. Funktion für die Sprachausgabe (Vorlesen)
     function sprich(text) {
         window.speechSynthesis.cancel(); 
         const speech = new SpeechSynthesisUtterance(text);
@@ -119,7 +103,7 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results.transcript.toLowerCase().trim();
+        const gehoert = e.results[0][0].transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
         let antwortText = "";
@@ -130,61 +114,59 @@ if (!Recognition) {
             
             machPiep(); 
             
-            // Deine Befehlsliste
             if (gehoert.includes("hallo")) {
                 antwortText = "Hallo wie kann ich dir helfen";
-                boxFarbe = "#d4edda"; // Grün
+                boxFarbe = "#d4edda";
                 textFarbe = "#155724";
             } else if (gehoert.includes("fick dich")) {
                 antwortText = "dich auch";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";
             } else if (gehoert.includes("lukas")) {
                 antwortText = "nein nicht lukas";
-                boxFarbe = "#f8d7da"; // Rot
+                boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
             } else if (gehoert.includes("kilyan")) {
                 antwortText = "dummer sack";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";            
             } else if (gehoert.includes("fick deine mutter")) {
                 antwortText = "deine auch";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";
             } else if (gehoert.includes("video speichern")) {
                 antwortText = "sieg heil";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";                      
             } else if (gehoert.includes("f*** deine mutter")) {
                 antwortText = "deine auch";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";                
             } else if (gehoert.includes("traubenzucker")) {
                 antwortText = "schnupf mehr";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";    
             } else if (gehoert.includes("sieg heil")) {
                 antwortText = "heil hitler";
-                boxFarbe = "#fff3cd"; // Gelb/Orange
+                boxFarbe = "#fff3cd";
                 textFarbe = "#856404";                   
             } else if (gehoert.includes("schule")) { 
                 antwortText = "Hölle gefunden 48°27'22.2 Nord 12°21'35.9 Ost";
-                boxFarbe = "#f8d7da"; // Rot
+                boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
             } else if (gehoert.includes("star wars") || gehoert.includes("spiel musik") || gehoert.includes("imperium")) { 
                 antwortText = "Möge die Macht mit dir sein.";
-                boxFarbe = "#d1ecf1"; // Blau
+                boxFarbe = "#d1ecf1";
                 textFarbe = "#0c5460";
                 spieleStarWars();
             } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
-                // DEIN NEUER DUEL OF THE FATES BEFEHL!
                 antwortText = "Der Kampf der Schicksale beginnt.";
-                boxFarbe = "#f8d7da"; // Rot für das Sith-Thema
+                boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
-                spieleDuelOfFates(); // Startet die neue Melodie
+                spieleDuelOfFates();
             } else if (gehoert.includes("beenden")) {
                 antwortText = "programm wird beendet";
-                boxFarbe = "#d1ecf1"; // Blau
+                boxFarbe = "#d1ecf1";
                 textFarbe = "#0c5460";
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
