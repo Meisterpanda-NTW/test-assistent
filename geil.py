@@ -88,27 +88,27 @@ if (!Recognition) {{
     function spieleEchtesDuelOfFates() {
         window.speechSynthesis.cancel();
         const base64Data = "{duel_base64}"; 
-        if (base64Data.length > 0) {
+        if (base64Data.length > 0) {{
             audioPlayer.src = "data:audio/mp3;base64," + base64Data;
             audioPlayer.volume = 0.5;
             audioPlayer.play().catch(e => {});
-        } else {
+        }} else {
             status.innerText = "Fehler: 'duel.mp3' fehlt auf dem Server.";
-        }
-    }
+        }}
+    }}
 
     // LIED 2: Cantina Band Song
-    function spieleCantinaSong() {
+    function spieleCantinaSong() {{
         window.speechSynthesis.cancel();
         const base64Data = "{cantina_base64}";
         if (base64Data.length > 0) {
             audioPlayer.src = "data:audio/mp3;base64," + base64Data;
             audioPlayer.volume = 0.5;
             audioPlayer.play().catch(e => {});
-        } else {
+        }} else {{
             status.innerText = "Fehler: 'cantina.mp3' fehlt auf dem Server.";
-        }
-    }
+        }}
+    }}
 
 
     function sprich(text) {{
@@ -180,7 +180,7 @@ if (!Recognition) {{
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
                 spieleEchtesDuelOfFates(); 
-            } else if (gehoert.includes("cantina") || gehoert.includes("bar")) { 
+            }} else if (gehoert.includes("cantina") || gehoert.includes("bar")) {{ 
                 antwortText = "starte Episode 4.";
                 boxFarbe = "#fff3cd"; // Gelbe Box
                 textFarbe = "#856404";
