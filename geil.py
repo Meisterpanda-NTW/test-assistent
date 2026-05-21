@@ -149,8 +149,9 @@ if (!Recognition) {
             
             // Deine komplette originale Befehlsliste
             if (gehoert.includes("hallo")) {
-                antwortText = "Hallo wie kann ich dir helfen";
+                antwortText = "";
                 boxFarbe = "#d4edda";
+                spieleHello();
             } else if (gehoert.includes("fick dich")) {
                 antwortText = "dich auch";
                 boxFarbe = "#fff3cd";
