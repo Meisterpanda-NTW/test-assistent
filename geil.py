@@ -33,10 +33,6 @@ if (!Recognition) {
     let siriStimme = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(siriStimme);
 
-    // Freier, legaler Audio-Player für Hintergrundmusik
-    const audioPlayer = new Audio();
-    audioPlayer.crossOrigin = "anonymous"; // Umgeht die Browser-Sperre
-
     function machPiep() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -45,8 +41,8 @@ if (!Recognition) {
         setTimeout(() => osc.stop(), 200);
     }
 
+    // INTERNER UNTERSCHIED: Melodie A (Marsch)
     function spieleStarWars() {
-        audioPlayer.pause();
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
             {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5},
@@ -69,14 +65,27 @@ if (!Recognition) {
         });
     }
 
-    // Lädt das Lied direkt über einen freien Audio-Server ohne YouTube-Zwang
-    function spieleEchtesDuelOfFates() {
-        window.speechSynthesis.cancel();
-        // Direkter, stabiler MP3-Link zum originalen Soundtrack
-        audioPlayer.src = "https://archive.org";
-        audioPlayer.volume = 0.5;
-        audioPlayer.play().catch(e => {
-            status.innerText = "Konnte Musik nicht starten. Klicke noch einmal.";
+    // INTERNER UNTERSCHIED: Melodie B (Duel of Fates) - Läuft komplett lokal ohne Internet-Audio!
+    function spieleLokalesDuelOfFates() {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const melodie = [
+            {f: 329.63, d: 0.18}, {f: 349.23, d: 0.18}, {f: 329.63, d: 0.18}, {f: 293.66, d: 0.18},
+            {f: 329.63, d: 0.18}, {f: 261.63, d: 0.18}, {f: 293.66, d: 0.18}, {f: 246.94, d: 0.18},
+            {f: 329.63, d: 0.35}, {f: 392.00, d: 0.35}, {f: 329.63, d: 0.60}
+        ];
+        let startZeit = ctx.currentTime;
+        melodie.forEach((note) => {
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            osc.type = 'triangle'; // Breiter Synthesizer-Sound
+            osc.frequency.value = note.f;
+            gainNode.gain.setValueAtTime(0.3, startZeit);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startZeit + note.d);
+            osc.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            osc.start(startZeit);
+            osc.stop(startZeit + note.d);
+            startZeit += note.d + 0.03; 
         });
     }
 
@@ -96,6 +105,7 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
+        // Richtiger Pfad für PC & iPad
         const gehoert = e.results[0][0].transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
@@ -142,14 +152,13 @@ if (!Recognition) {
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
             } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
-                antwortText = "Spiele das komplette Duel of the Fates Thema.";
+                antwortText = "Spiele das Duel of the Fates Thema.";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
-                spieleEchtesDuelOfFates(); 
-            } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
-                antwortText = "Musik gestoppt, programm wird beendet";
+                spieleLokalesDuelOfFates(); // Startet die unzerstörbare Melodie
+            } else if (gehoert.includes("beenden")) {
+                antwortText = "programm wird beendet";
                 boxFarbe = "#d1ecf1";
-                audioPlayer.pause(); // Schaltet den MP3-Stream sofort stumm
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
             } else {
@@ -166,9 +175,7 @@ if (!Recognition) {
             antwortBox.style.backgroundColor = boxFarbe;
             antwortBox.style.color = textFarbe;
             antwortBox.style.display = "block";
-            if (!gehoert.includes("duel of fates") && !gehoert.includes("schicksal") && !gehoert.includes("kampf")) {
-                setTimeout(() => { sprich(antwortText); }, 250);
-            }
+            setTimeout(() => { sprich(antwortText); }, 250);
         }
         
         btn.style.backgroundColor = "#ff4b4b";
