@@ -73,7 +73,7 @@ if (!Recognition) {
         window.speechSynthesis.cancel();
         
         // Holt sich den Pfad über den freigeschalteten statischen Streamlit-Ordner
-        audioPlayer.src = window.location.origin + "/app/static/duel.mp3";
+        audioPlayer.src = window.location.origin + "https://githubusercontent.com";
         audioPlayer.volume = 0.5;
         
         audioPlayer.play().catch(e => {
