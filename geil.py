@@ -16,7 +16,7 @@ def get_audio_base64(dateiname):
 # Hier werden beide Lieder vom Server geladen und vorbereitet
 duel_base64 = get_audio_base64("duel.mp3")
 cantina_base64 = get_audio_base64("cantina.mp3")
-hello_base64 = get_audio_base64("hello.mp3")
+hello_base64 = get_audio_base64("hello.mp3") 
 
 # Der HTML/JavaScript-Block als normaler Text OHNE f-String (Klammerfehler ab jetzt UNMÖGLICH!)
 html_reine_web_app = """
@@ -236,7 +236,8 @@ if (!Recognition) {
 """
 
 # Sicherer Python-Befehl: Setzt die Musik-Datenströme ohne f-String ein
-html_bereit = html_reine_web_app.replace("PLATZHALTER_DUEL_MUSIC", duel_base64).replace("PLATZHALTER_CANTINA_MUSIC", cantina_base64)
+html_bereit = html_reine_web_app.replace("PLATZHALTER_DUEL_MUSIC", duel_base64).replace("PLATZHALTER_CANTINA_MUSIC", cantina_base64).replace("PLATZHALTER_Hello_MUSIC", hello_base64)
+
 
 # Zeigt die fertige App blockierungsfrei auf Streamlit an
 st.components.v1.html(html_bereit, height=270)
