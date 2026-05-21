@@ -13,6 +13,9 @@ html_reine_web_app = """
     
     <!-- Hier blenden wir die Antworten direkt auf der Seite ein -->
     <div id="antwort-box" style="margin-top: 20px; padding: 15px; border-radius: 8px; font-family: sans-serif; font-weight: bold; display: none; font-size: 16px;"></div>
+    
+    <!-- Unsichtbares YouTube-Video für die Musik -->
+    <div id="yt-player" style="display:none;"></div>
 </div>
 
 <script>
@@ -33,8 +36,21 @@ if (!Recognition) {
     let siriStimme = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(siriStimme);
 
-    // Wir erstellen ein unsichtbares Audio-Element für echte Internet-Musik
-    const audioPlayer = new Audio();
+    // Lädt die offizielle YouTube-Player-Schnittstelle
+    let player;
+    const tag = document.createElement('script');
+    tag.src = "https://youtube.com";
+    const firstScriptTag = document.getElementsByTagName('script')[0];
+    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+    window.onYouTubeIframeAPIReady = function() {
+        player = new YT.Player('yt-player', {
+            height: '0',
+            width: '0',
+            videoId: 'ZTg6hg1mi8w', // Die ID des echten "Duel of the Fates" Videos
+            playerVars: { 'autoplay': 0, 'controls': 0 }
+        });
+    }
 
     function machPiep() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -45,7 +61,7 @@ if (!Recognition) {
     }
 
     function spieleStarWars() {
-        audioPlayer.pause(); // Stoppt andere Musik
+        if(player && player.pauseVideo) player.pauseVideo();
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
             {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5},
@@ -68,15 +84,12 @@ if (!Recognition) {
         });
     }
 
-    // SPRIELT JETZT DAS KOMPLETTE LIED AUS DEM INTERNET
     function spieleEchtesDuelOfFates() {
         window.speechSynthesis.cancel();
-        // Link zu einer frei verfügbaren, echten MP3-Version des Songs im Internet
-        audioPlayer.src = "https://soundhelix.com"; // Beispiel-Stream (kannst du durch jeden MP3-Link ersetzen!)
-        audioPlayer.volume = 0.4;
-        audioPlayer.play().catch(e => {
-            status.innerText = "Audio-Fehler beim Laden des Songs.";
-        });
+        if (player && player.playVideo) {
+            player.setVolume(40);
+            player.playVideo();
+        }
     }
 
     function sprich(text) {
@@ -95,7 +108,7 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results[0][0].transcript.toLowerCase().trim();
+        const gehoert = e.results.transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
         let antwortText = "";
@@ -144,11 +157,11 @@ if (!Recognition) {
                 antwortText = "Spiele das komplette Duel of the Fates Thema.";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
-                spieleEchtesDuelOfFates(); // Startet das Lied
+                spieleEchtesDuelOfFates(); 
             } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
                 antwortText = "Musik gestoppt, programm wird beendet";
                 boxFarbe = "#d1ecf1";
-                audioPlayer.pause(); // Schaltet die Musik sofort stumm!
+                if(player && player.pauseVideo) player.pauseVideo(); // Stoppt YouTube sofort!
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
             } else {
@@ -165,8 +178,7 @@ if (!Recognition) {
             antwortBox.style.backgroundColor = boxFarbe;
             antwortBox.style.color = textFarbe;
             antwortBox.style.display = "block";
-            // Wenn Musik läuft, liest er den Text nicht laut vor, um nicht drüberzuschreien
-            if (!gehoert.includes("duel of fates")) {
+            if (!gehoert.includes("duel of fates") && !gehoert.includes("schicksal") && !gehoert.includes("kampf")) {
                 setTimeout(() => { sprich(antwortText); }, 250);
             }
         }
