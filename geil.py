@@ -157,8 +157,8 @@ if (!Recognition) {{
                 antwortText = "Möge die Macht mit dir sein.";
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
-            }} else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) {{ 
-                antwortText = "Spiele dein hochgeladenes Duel of the Fates Thema.";
+            }} else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("episode 1")) {{ 
+                antwortText = "Starte Epsiode 1";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
                 spieleEchtesDuelOfFates(); 
