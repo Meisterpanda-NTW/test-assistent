@@ -16,6 +16,7 @@ def get_audio_base64(dateiname):
 # Hier werden beide Lieder vom Server geladen und vorbereitet
 duel_base64 = get_audio_base64("duel.mp3")
 cantina_base64 = get_audio_base64("cantina.mp3")
+hello_base64 = get_audio_base64("hello.mp3")
 
 # Der HTML/JavaScript-Block als normaler Text OHNE f-String (Klammerfehler ab jetzt UNMÖGLICH!)
 html_reine_web_app = """
@@ -107,7 +108,18 @@ if (!Recognition) {
             status.innerText = "Fehler: 'cantina.mp3' fehlt auf dem Server.";
         }
     }
-
+    // LIED 2: Cantina Band Song (Ganz normale, einfache JavaScript-Klammern!)
+    function spieleHello() {
+        window.speechSynthesis.cancel();
+        const base64Data = "PLATZHALTER_Hello_MUSIC";
+        if (base64Data.length > 0) {
+            audioPlayer.src = "data:audio/mp3;base64," + base64Data;
+            audioPlayer.volume = 0.5;
+            audioPlayer.play().catch(e => {});
+        } else {
+            status.innerText = "Fehler: 'hello.mp3' fehlt auf dem Server.";
+        }
+    }
     function sprich(text) {
         window.speechSynthesis.cancel(); 
         const speech = new SpeechSynthesisUtterance(text);
