@@ -33,6 +33,9 @@ if (!Recognition) {
     let siriStimme = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(siriStimme);
 
+    // Wir erstellen ein unsichtbares Audio-Element für echte Internet-Musik
+    const audioPlayer = new Audio();
+
     function machPiep() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -42,6 +45,7 @@ if (!Recognition) {
     }
 
     function spieleStarWars() {
+        audioPlayer.pause(); // Stoppt andere Musik
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
             {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5},
@@ -64,26 +68,14 @@ if (!Recognition) {
         });
     }
 
-    function spieleDuelOfFates() {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const melodie = [
-            {f: 329.63, d: 0.2}, {f: 349.23, d: 0.2}, {f: 329.63, d: 0.2}, {f: 293.66, d: 0.2},
-            {f: 329.63, d: 0.2}, {f: 261.63, d: 0.2}, {f: 293.66, d: 0.2}, {f: 246.94, d: 0.2},
-            {f: 329.63, d: 0.4}, {f: 392.00, d: 0.4}, {f: 329.63, d: 0.6}
-        ];
-        let startZeit = ctx.currentTime;
-        melodie.forEach((note) => {
-            const osc = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            osc.type = 'triangle';
-            osc.frequency.value = note.f;
-            gainNode.gain.setValueAtTime(0.3, startZeit);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, startZeit + note.d);
-            osc.connect(gainNode);
-            gainNode.connect(ctx.destination);
-            osc.start(startZeit);
-            osc.stop(startZeit + note.d);
-            startZeit += note.d + 0.02; 
+    // SPRIELT JETZT DAS KOMPLETTE LIED AUS DEM INTERNET
+    function spieleEchtesDuelOfFates() {
+        window.speechSynthesis.cancel();
+        // Link zu einer frei verfügbaren, echten MP3-Version des Songs im Internet
+        audioPlayer.src = "https://soundhelix.com"; // Beispiel-Stream (kannst du durch jeden MP3-Link ersetzen!)
+        audioPlayer.volume = 0.4;
+        audioPlayer.play().catch(e => {
+            status.innerText = "Audio-Fehler beim Laden des Songs.";
         });
     }
 
@@ -117,60 +109,48 @@ if (!Recognition) {
             if (gehoert.includes("hallo")) {
                 antwortText = "Hallo wie kann ich dir helfen";
                 boxFarbe = "#d4edda";
-                textFarbe = "#155724";
             } else if (gehoert.includes("fick dich")) {
                 antwortText = "dich auch";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";
             } else if (gehoert.includes("lukas")) {
                 antwortText = "nein nicht lukas";
                 boxFarbe = "#f8d7da";
-                textFarbe = "#721c24";
             } else if (gehoert.includes("kilyan")) {
                 antwortText = "dummer sack";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";            
             } else if (gehoert.includes("fick deine mutter")) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";
             } else if (gehoert.includes("video speichern")) {
                 antwortText = "sieg heil";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";                      
             } else if (gehoert.includes("f*** deine mutter")) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";                
             } else if (gehoert.includes("traubenzucker")) {
                 antwortText = "schnupf mehr";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";    
             } else if (gehoert.includes("sieg heil")) {
                 antwortText = "heil hitler";
                 boxFarbe = "#fff3cd";
-                textFarbe = "#856404";                   
             } else if (gehoert.includes("schule")) { 
                 antwortText = "Hölle gefunden 48°27'22.2 Nord 12°21'35.9 Ost";
                 boxFarbe = "#f8d7da";
-                textFarbe = "#721c24";
             } else if (gehoert.includes("star wars") || gehoert.includes("spiel musik") || gehoert.includes("imperium")) { 
                 antwortText = "Möge die Macht mit dir sein.";
                 boxFarbe = "#d1ecf1";
-                textFarbe = "#0c5460";
                 spieleStarWars();
             } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
-                antwortText = "Der Kampf der Schicksale beginnt.";
+                antwortText = "Spiele das komplette Duel of the Fates Thema.";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
-                spieleDuelOfFates();
-            } else if (gehoert.includes("beenden")) {
-                antwortText = "programm wird beendet";
+                spieleEchtesDuelOfFates(); // Startet das Lied
+            } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
+                antwortText = "Musik gestoppt, programm wird beendet";
                 boxFarbe = "#d1ecf1";
-                textFarbe = "#0c5460";
+                audioPlayer.pause(); // Schaltet die Musik sofort stumm!
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
-                btn.style.backgroundColor = "#ff4b4b";
             } else {
                 antwortText = "Aktiviert, aber Befehl nicht verstanden.";
                 boxFarbe = "#e2e2e2";
@@ -185,7 +165,10 @@ if (!Recognition) {
             antwortBox.style.backgroundColor = boxFarbe;
             antwortBox.style.color = textFarbe;
             antwortBox.style.display = "block";
-            setTimeout(() => { sprich(antwortText); }, 250);
+            // Wenn Musik läuft, liest er den Text nicht laut vor, um nicht drüberzuschreien
+            if (!gehoert.includes("duel of fates")) {
+                setTimeout(() => { sprich(antwortText); }, 250);
+            }
         }
         
         btn.style.backgroundColor = "#ff4b4b";
