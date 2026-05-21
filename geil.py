@@ -138,6 +138,9 @@ if (!Recognition) {{
             }} else if (gehoert.includes("fick deine mutter")) {{
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd";
+            }} else if (gehoert.includes("befehle")) {{
+                antwortText = "hallo Befehle traubenzucker  und star wars";
+                boxFarbe = "#fff3cd";
             }} else if (gehoert.includes("video speichern")) {{
                 antwortText = "sieg heil";
                 boxFarbe = "#fff3cd";
