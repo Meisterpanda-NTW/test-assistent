@@ -93,6 +93,10 @@ if (!Recognition) {
                 antwortText = "nein nicht lukas";
                 boxFarbe = "#f8d7da"; // Rot
                 textFarbe = "#721c24";
+            } else if (gehoert.includes("kilyan")) {
+                antwortText = "dummer sack";
+                boxFarbe = "#fff3cd"; // Gelb/Orange
+                textFarbe = "#856404";            
             } else if (gehoert.includes("fick deine mutter")) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
