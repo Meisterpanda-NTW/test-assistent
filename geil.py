@@ -139,7 +139,7 @@ if (!Recognition) {{
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd";
             }} else if (gehoert.includes("befehle")) {{
-                antwortText = "hallo Befehle traubenzucker  und star wars";
+                antwortText = " Befehle lauten hallo Befehle traubenzucker  und star wars";
                 boxFarbe = "#fff3cd";
             }} else if (gehoert.includes("video speichern")) {{
                 antwortText = "sieg heil";
