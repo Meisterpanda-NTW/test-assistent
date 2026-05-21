@@ -44,58 +44,74 @@ if (!Recognition) {
         setTimeout(() => osc.stop(), 200);
     }
 
-    // 2. FUNKTION: Der Star Wars Imperial March aus Frequenzen
+    // 2. FUNKTION A: Der Star Wars Imperial March
     function spieleStarWars() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
-            {f: 440.00, d: 0.5},  // A
-            {f: 440.00, d: 0.5},  // A
-            {f: 440.00, d: 0.5},  // A
-            {f: 349.23, d: 0.35}, // F
-            {f: 523.25, d: 0.15}, // hohes C
-            {f: 440.00, d: 0.5},  // A
-            {f: 349.23, d: 0.35}, // F
-            {f: 523.25, d: 0.15}, // hohes C
-            {f: 440.00, d: 0.6}   // langer Ausklang auf A
+            {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5},
+            {f: 349.23, d: 0.35}, {f: 523.25, d: 0.15}, {f: 440.00, d: 0.5},
+            {f: 349.23, d: 0.35}, {f: 523.25, d: 0.15}, {f: 440.00, d: 0.6}
         ];
-
         let startZeit = ctx.currentTime;
-
         melodie.forEach((note) => {
             const osc = ctx.createOscillator();
             const gainNode = ctx.createGain();
-            
-            osc.type = 'sawtooth'; // Synthesizer-Sound für Star Wars
+            osc.type = 'sawtooth';
             osc.frequency.value = note.f;
-            
             gainNode.gain.setValueAtTime(0.3, startZeit);
             gainNode.gain.exponentialRampToValueAtTime(0.01, startZeit + note.d);
-            
             osc.connect(gainNode);
             gainNode.connect(ctx.destination);
-            
             osc.start(startZeit);
             osc.stop(startZeit + note.d);
-            
-            startZeit += note.d + 0.05; 
+            startZeit += note.d + 0.05;
         });
     }
 
-    // 3. Funktion für die Sprachausgabe (Vorlesen)
+    // 3. NEUE FUNKTION B: Duel of the Fates (Hauptmotiv in E-Moll)
+    function spieleDuelOfFates() {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // Das unverkennbare, schnelle Ostinato-Thema
+        const melodie = [
+            {f: 329.63, d: 0.2},  // E
+            {f: 349.23, d: 0.2},  // F
+            {f: 329.63, d: 0.2},  // E
+            {f: 293.66, d: 0.2},  // D
+            {f: 329.63, d: 0.2},  // E
+            {f: 261.63, d: 0.2},  // C
+            {f: 293.66, d: 0.2},  // D
+            {f: 246.94, d: 0.2},  // H
+            {f: 329.63, d: 0.4},  // E (länger)
+            {f: 392.00, d: 0.4},  // G
+            {f: 329.63, d: 0.6}   // E (Ausklang)
+        ];
+        let startZeit = ctx.currentTime;
+        melodie.forEach((note) => {
+            const osc = ctx.createOscillator();
+            const gainNode = ctx.createGain();
+            osc.type = 'triangle'; // Klingt etwas choraler/breiter
+            osc.frequency.value = note.f;
+            gainNode.gain.setValueAtTime(0.3, startZeit);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, startZeit + note.d);
+            osc.connect(gainNode);
+            gainNode.connect(ctx.destination);
+            osc.start(startZeit);
+            osc.stop(startZeit + note.d);
+            // Kürzere Pausen für den schnellen, treibenden Rhythmus
+            startZeit += note.d + 0.02; 
+        });
+    }
+
+    // 4. Funktion für die Sprachausgabe (Vorlesen)
     function sprich(text) {
         window.speechSynthesis.cancel(); 
         const speech = new SpeechSynthesisUtterance(text);
         speech.lang = 'de-DE';
-        
-        // >>> HIER STELLST DU DIE TIEFE EIN <<<
-
         window.speechSynthesis.speak(speech);
     }
 
-    // Klick-Event aktiviert das iPad-Audio und startet das Mikrofon
     btn.addEventListener('click', () => {
         window.speechSynthesis.speak(new SpeechSynthesisUtterance(""));
-        
         try { rec.start(); } catch(e) {}
         status.innerText = "🔊 Ich höre zu... Sprich jetzt deinen Befehl!";
         btn.style.backgroundColor = "#2baf2b"; 
@@ -103,19 +119,18 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results[0][0].transcript.toLowerCase().trim();
+        const gehoert = e.results.transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
         let antwortText = "";
         let boxFarbe = "#e2e2e2";
         let textFarbe = "#333";
 
-        // Prüft, ob das Aktivierungswort "Okay Garmin" im Satz steckt
         if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) {
             
-            machPiep(); // Macht den Bestätigungs-Piepser
+            machPiep(); 
             
-            // Deine Befehle direkt in JavaScript geprüft
+            // Deine Befehlsliste
             if (gehoert.includes("hallo")) {
                 antwortText = "Hallo wie kann ich dir helfen";
                 boxFarbe = "#d4edda"; // Grün
@@ -160,7 +175,13 @@ if (!Recognition) {
                 antwortText = "Möge die Macht mit dir sein.";
                 boxFarbe = "#d1ecf1"; // Blau
                 textFarbe = "#0c5460";
-                spieleStarWars(); // Spielt Darth Vaders Theme ab
+                spieleStarWars();
+            } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
+                // DEIN NEUER DUEL OF THE FATES BEFEHL!
+                antwortText = "Der Kampf der Schicksale beginnt.";
+                boxFarbe = "#f8d7da"; // Rot für das Sith-Thema
+                textFarbe = "#721c24";
+                spieleDuelOfFates(); // Startet die neue Melodie
             } else if (gehoert.includes("beenden")) {
                 antwortText = "programm wird beendet";
                 boxFarbe = "#d1ecf1"; // Blau
@@ -177,14 +198,11 @@ if (!Recognition) {
             status.innerText = "Ignoriert (Kein 'Okay Garmin' im Satz): '" + gehoert + "'";
         }
 
-        // Antwort anzeigen und sprechen lassen
         if (antwortText) {
             antwortBox.innerText = antwortText;
             antwortBox.style.backgroundColor = boxFarbe;
             antwortBox.style.color = textFarbe;
             antwortBox.style.display = "block";
-            
-            // Kleiner Puffer, damit Siri nicht mitten in den Piepton spricht
             setTimeout(() => { sprich(antwortText); }, 250);
         }
         
@@ -202,5 +220,4 @@ if (!Recognition) {
 </script>
 """
 
-# Zeigt die komplette App auf deiner Streamlit-Website an
 st.components.v1.html(html_reine_web_app, height=270)
