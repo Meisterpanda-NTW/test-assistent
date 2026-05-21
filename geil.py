@@ -101,6 +101,10 @@ if (!Recognition) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
                 textFarbe = "#856404";
+            } else if (gehoert.includes("video speichern")) {
+                antwortText = "sieg heil";
+                boxFarbe = "#fff3cd"; // Gelb/Orange
+                textFarbe = "#856404";                      
             } else if (gehoert.includes("f*** deine mutter")) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd"; // Gelb/Orange
