@@ -13,9 +13,6 @@ html_reine_web_app = """
     
     <!-- Hier blenden wir die Antworten direkt auf der Seite ein -->
     <div id="antwort-box" style="margin-top: 20px; padding: 15px; border-radius: 8px; font-family: sans-serif; font-weight: bold; display: none; font-size: 16px;"></div>
-    
-    <!-- Unsichtbares YouTube-Video für die Musik -->
-    <div id="yt-player" style="display:none;"></div>
 </div>
 
 <script>
@@ -36,21 +33,9 @@ if (!Recognition) {
     let siriStimme = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(siriStimme);
 
-    // Lädt die offizielle YouTube-Player-Schnittstelle
-    let player;
-    const tag = document.createElement('script');
-    tag.src = "https://youtube.com";
-    const firstScriptTag = document.getElementsByTagName('script')[0];
-    firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-    window.onYouTubeIframeAPIReady = function() {
-        player = new YT.Player('yt-player', {
-            height: '0',
-            width: '0',
-            videoId: 'ZTg6hg1mi8w', // Die ID des echten "Duel of the Fates" Videos
-            playerVars: { 'autoplay': 0, 'controls': 0 }
-        });
-    }
+    // Freier, legaler Audio-Player für Hintergrundmusik
+    const audioPlayer = new Audio();
+    audioPlayer.crossOrigin = "anonymous"; // Umgeht die Browser-Sperre
 
     function machPiep() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
@@ -61,7 +46,7 @@ if (!Recognition) {
     }
 
     function spieleStarWars() {
-        if(player && player.pauseVideo) player.pauseVideo();
+        audioPlayer.pause();
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
             {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5},
@@ -84,12 +69,15 @@ if (!Recognition) {
         });
     }
 
+    // Lädt das Lied direkt über einen freien Audio-Server ohne YouTube-Zwang
     function spieleEchtesDuelOfFates() {
         window.speechSynthesis.cancel();
-        if (player && player.playVideo) {
-            player.setVolume(40);
-            player.playVideo();
-        }
+        // Direkter, stabiler MP3-Link zum originalen Soundtrack
+        audioPlayer.src = "https://archive.org";
+        audioPlayer.volume = 0.5;
+        audioPlayer.play().catch(e => {
+            status.innerText = "Konnte Musik nicht starten. Klicke noch einmal.";
+        });
     }
 
     function sprich(text) {
@@ -108,7 +96,7 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results.transcript.toLowerCase().trim();
+        const gehoert = e.results[0][0].transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
         let antwortText = "";
@@ -161,7 +149,7 @@ if (!Recognition) {
             } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
                 antwortText = "Musik gestoppt, programm wird beendet";
                 boxFarbe = "#d1ecf1";
-                if(player && player.pauseVideo) player.pauseVideo(); // Stoppt YouTube sofort!
+                audioPlayer.pause(); // Schaltet den MP3-Stream sofort stumm
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
             } else {
