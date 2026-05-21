@@ -33,6 +33,9 @@ if (!Recognition) {
     let siriStimme = new SpeechSynthesisUtterance("");
     window.speechSynthesis.speak(siriStimme);
 
+    // Der integrierte Musik-Player für deine hochgeladene MP3
+    const audioPlayer = new Audio();
+
     function machPiep() {
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const osc = ctx.createOscillator();
@@ -41,8 +44,8 @@ if (!Recognition) {
         setTimeout(() => osc.stop(), 200);
     }
 
-    // INTERNER UNTERSCHIED: Melodie A (Marsch)
     function spieleStarWars() {
+        audioPlayer.pause(); // Stoppt die echte Musik, falls sie läuft
         const ctx = new (window.AudioContext || window.webkitAudioContext)();
         const melodie = [
             {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5}, {f: 440.00, d: 0.5},
@@ -65,27 +68,20 @@ if (!Recognition) {
         });
     }
 
-    // INTERNER UNTERSCHIED: Melodie B (Duel of Fates) - Läuft komplett lokal ohne Internet-Audio!
-    function spieleLokalesDuelOfFates() {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const melodie = [
-            {f: 329.63, d: 0.18}, {f: 349.23, d: 0.18}, {f: 329.63, d: 0.18}, {f: 293.66, d: 0.18},
-            {f: 329.63, d: 0.18}, {f: 261.63, d: 0.18}, {f: 293.66, d: 0.18}, {f: 246.94, d: 0.18},
-            {f: 329.63, d: 0.35}, {f: 392.00, d: 0.35}, {f: 329.63, d: 0.60}
-        ];
-        let startZeit = ctx.currentTime;
-        melodie.forEach((note) => {
-            const osc = ctx.createOscillator();
-            const gainNode = ctx.createGain();
-            osc.type = 'triangle'; // Breiter Synthesizer-Sound
-            osc.frequency.value = note.f;
-            gainNode.gain.setValueAtTime(0.3, startZeit);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, startZeit + note.d);
-            osc.connect(gainNode);
-            gainNode.connect(ctx.destination);
-            osc.start(startZeit);
-            osc.stop(startZeit + note.d);
-            startZeit += note.d + 0.03; 
+    // SPRIELT DEINE HOCHGELADENE DATEI VOM EIGENEN SERVER AB!
+    function spieleEchtesDuelOfFates() {
+        window.speechSynthesis.cancel();
+        
+        // Genialer Trick: Lädt die MP3 direkt aus demselben Ordner deiner Website
+        audioPlayer.src = window.location.origin + "/app/static/duel.mp3";
+        audioPlayer.volume = 0.5;
+        
+        audioPlayer.play().catch(e => {
+            // Falls Streamlit die Datei in einem anderen Pfad versteckt, hier der sichere Ersatz-Pfad
+            audioPlayer.src = "duel.mp3";
+            audioPlayer.play().catch(err => {
+                status.innerText = "Fehler beim Laden deiner 'duel.mp3' auf GitHub.";
+            });
         });
     }
 
@@ -105,7 +101,6 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        // Richtiger Pfad für PC & iPad
         const gehoert = e.results[0][0].transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
@@ -152,13 +147,14 @@ if (!Recognition) {
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
             } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
-                antwortText = "Spiele das Duel of the Fates Thema.";
+                antwortText = "Spiele dein hochgeladenes Duel of the Fates Thema.";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
-                spieleLokalesDuelOfFates(); // Startet die unzerstörbare Melodie
-            } else if (gehoert.includes("beenden")) {
-                antwortText = "programm wird beendet";
+                spieleEchtesDuelOfFates(); // Startet das Lied von deiner eigenen Seite
+            } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
+                antwortText = "Musik gestoppt, programm wird beendet";
                 boxFarbe = "#d1ecf1";
+                audioPlayer.pause(); // Schaltet deine Musik sofort aus
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
             } else {
@@ -175,7 +171,9 @@ if (!Recognition) {
             antwortBox.style.backgroundColor = boxFarbe;
             antwortBox.style.color = textFarbe;
             antwortBox.style.display = "block";
-            setTimeout(() => { sprich(antwortText); }, 250);
+            if (!gehoert.includes("duel of fates") && !gehoert.includes("schicksal") && !gehoert.includes("kampf")) {
+                setTimeout(() => { sprich(antwortText); }, 250);
+            }
         }
         
         btn.style.backgroundColor = "#ff4b4b";
@@ -192,4 +190,5 @@ if (!Recognition) {
 </script>
 """
 
+# Zeigt die App auf deiner Streamlit-Website an
 st.components.v1.html(html_reine_web_app, height=270)
