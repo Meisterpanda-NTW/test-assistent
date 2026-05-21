@@ -23,7 +23,7 @@ html_reine_web_app = """
     <button id="mic-btn" style="background-color: #ff4b4b; color: white; border: none; padding: 14px 28px; font-size: 18px; border-radius: 12px; cursor: pointer; font-weight: bold; width: 260px; transition: 0.3s; font-family: sans-serif;">
         🎙️ Befehl einsprechen
     </button>
-    <p id="status" style="color: #555; font-family: sans-serif; margin-top: 15px; font-weight: bold; font-size: 15px;">Bereit fürs iPad. Klicke zum Sprechen.</p>
+    <p id="status" style="color: #555; font-family: sans-serif; margin-top: 15px; font-weight: bold; font-size: 15px;">Klicke zum Sprechen.</p>
     
     <!-- Hier blenden wir die Antworten direkt auf der Seite ein -->
     <div id="antwort-box" style="margin-top: 20px; padding: 15px; border-radius: 8px; font-family: sans-serif; font-weight: bold; display: none; font-size: 16px;"></div>
@@ -170,13 +170,13 @@ if (!Recognition) {
                 antwortText = "Möge die Macht mit dir sein.";
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
-            } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
-                antwortText = "Spiele dein hochgeladenes Duel of the Fates Thema.";
+            } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("episode 1")) { 
+                antwortText = "starte Episode 1";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
                 spieleEchtesDuelOfFates(); 
-            } else if (gehoert.includes("cantina") || gehoert.includes("song") || gehoert.includes("bar")) { 
-                antwortText = "Spiele den Cantina Band Song.";
+            } else if (gehoert.includes("cantina") || gehoert.includes("song") || gehoert.includes("episode 4")) { 
+                antwortText = "starte Episode 4";
                 boxFarbe = "#fff3cd";
                 textFarbe = "#856404";
                 spieleCantinaSong(); 
