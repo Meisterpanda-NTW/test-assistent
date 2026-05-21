@@ -88,9 +88,7 @@ if (!Recognition) {
         speech.lang = 'de-DE';
         
         // >>> HIER STELLST DU DIE TIEFE EIN <<<
-        speech.pitch = 1.6; // Werte zwischen 0.5 und 2.0 (0.6 ist schön tief!)
-        speech.rate = 0.95;  // Macht die Stimme minimal langsamer, damit sie noch cooler klingt
-        
+
         window.speechSynthesis.speak(speech);
     }
 
