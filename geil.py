@@ -68,7 +68,7 @@ if (!Recognition) {
         });
     }
 
-    // SPRIELT DEINE HOCHGELADENE duel.mp3 IN VOLLER LÄNGE AB!
+    // SPIELT DEINE HOCHGELADENE duel.mp3 IN VOLLER LÄNGE AB!
     function spieleEchtesDuelOfFates() {
         window.speechSynthesis.cancel();
         
@@ -80,7 +80,7 @@ if (!Recognition) {
             // Sicherer Ausweich-Pfad, falls der Hauptpfad hakt
             audioPlayer.src = "app/static/duel.mp3";
             audioPlayer.play().catch(err => {
-                status.innerText = "Fehler beim Laden deiner 'duel.mp3'. Config.toml korrekt?";
+                status.innerText = "Fehler beim Laden deiner 'duel.mp3'.";
             });
         });
     }
@@ -101,7 +101,7 @@ if (!Recognition) {
     });
     
     rec.onresult = (e) => {
-        const gehoert = e.results.transcript.toLowerCase().trim();
+        const gehoert = e.results[0][0].transcript.toLowerCase().trim();
         status.innerText = "Gehört: '" + gehoert + "'";
         
         let antwortText = "";
@@ -147,7 +147,6 @@ if (!Recognition) {
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
             } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("kampf")) { 
-                // FEHLER BEHOBEN: Hier wird jetzt der echte Song gestartet!
                 antwortText = "Spiele dein hochgeladenes Duel of the Fates Thema.";
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
@@ -155,7 +154,7 @@ if (!Recognition) {
             } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
                 antwortText = "Musik gestoppt, programm wird beendet";
                 boxFarbe = "#d1ecf1";
-                audioPlayer.pause(); // Musik stoppen
+                audioPlayer.pause(); 
                 rec.stop();
                 status.innerText = "🛑 Assistent beendet.";
             } else {
