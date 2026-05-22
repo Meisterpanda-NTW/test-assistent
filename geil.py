@@ -207,7 +207,7 @@ if (!Recognition) {
             } else if (gehoert.includes("clone wars")) { 
                 antwortText = "Begunn";
                 boxFarbe = "#d1ecf1";
-                spieleCloneMusic();    
+                spieleCLONESong();    
             } else if (gehoert.includes("cantina") || gehoert.includes("song") || gehoert.includes("episode 4")) { 
                 antwortText = "starte Episode 4";
                 boxFarbe = "#fff3cd";
