@@ -195,7 +195,7 @@ if (!Recognition) {
             } else if (gehoert.includes("schule")) { 
                 antwortText = "Hölle gefunden 48°27'22.2 Nord 12°21'35.9 Ost";
                 boxFarbe = "#f8d7da";
-            } else if (gehoert.includes("star wars") || gehoert.includes("spiel musik") || gehoert.includes("imperium")) { 
+            } else if (gehoert.includes("imperium")) { 
                 antwortText = "Möge die Macht mit dir sein.";
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
@@ -204,6 +204,10 @@ if (!Recognition) {
                 boxFarbe = "#f8d7da";
                 textFarbe = "#721c24";
                 spieleEchtesDuelOfFates(); 
+            } else if (gehoert.includes("clone wars")) { 
+                antwortText = "";
+                boxFarbe = "#d1ecf1";
+                spieleCloneMusic();    
             } else if (gehoert.includes("cantina") || gehoert.includes("song") || gehoert.includes("episode 4")) { 
                 antwortText = "starte Episode 4";
                 boxFarbe = "#fff3cd";
