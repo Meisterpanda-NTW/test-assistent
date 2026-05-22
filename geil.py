@@ -17,6 +17,7 @@ def get_audio_base64(dateiname):
 duel_base64 = get_audio_base64("duel.mp3")
 cantina_base64 = get_audio_base64("cantina.mp3")
 hello_base64 = get_audio_base64("hello.mp3") 
+clone_base64 = get_audio_base64("clone.mp3") 
 
 # Der HTML/JavaScript-Block als normaler Text OHNE f-String (Klammerfehler ab jetzt UNMÖGLICH!)
 html_reine_web_app = """
@@ -118,6 +119,18 @@ if (!Recognition) {
             audioPlayer.play().catch(e => {});
         } else {
             status.innerText = "Fehler: 'hello.mp3' fehlt auf dem Server.";
+        }
+    }
+       // LIED 2: Cantina Band Song (Ganz normale, einfache JavaScript-Klammern!)
+    function spieleCLONESong() {
+        window.speechSynthesis.cancel();
+        const base64Data = "PLATZHALTER_CLONE_MUSIC";
+        if (base64Data.length > 0) {
+            audioPlayer.src = "data:audio/mp3;base64," + base64Data;
+            audioPlayer.volume = 0.5;
+            audioPlayer.play().catch(e => {});
+        } else {
+            status.innerText = "Fehler: 'CLONE.mp3' fehlt auf dem Server.";
         }
     }
     function sprich(text) {
@@ -236,7 +249,7 @@ if (!Recognition) {
 """
 
 # Sicherer Python-Befehl: Setzt die Musik-Datenströme ohne f-String ein
-html_bereit = html_reine_web_app.replace("PLATZHALTER_DUEL_MUSIC", duel_base64).replace("PLATZHALTER_CANTINA_MUSIC", cantina_base64).replace("PLATZHALTER_Hello_MUSIC", hello_base64)
+html_bereit = html_reine_web_app.replace("PLATZHALTER_DUEL_MUSIC", duel_base64).replace("PLATZHALTER_CANTINA_MUSIC", cantina_base64).replace("PLATZHALTER_Hello_MUSIC", hello_base64).replace("PLATZHALTER_CLONE_MUSIC", clone_base64)
 
 
 # Zeigt die fertige App blockierungsfrei auf Streamlit an
