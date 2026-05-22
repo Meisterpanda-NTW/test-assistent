@@ -205,7 +205,7 @@ if (!Recognition) {
                 textFarbe = "#721c24";
                 spieleEchtesDuelOfFates(); 
             } else if (gehoert.includes("clone wars")) { 
-                antwortText = "Begunn";
+                antwortText = "";
                 boxFarbe = "#d1ecf1";
                 spieleCLONESong();    
             } else if (gehoert.includes("cantina") || gehoert.includes("song") || gehoert.includes("episode 4")) { 
