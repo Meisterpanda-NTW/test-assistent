@@ -178,7 +178,7 @@ if (!Recognition) {
                 antwortText = "deine auch";
                 boxFarbe = "#fff3cd";
             } else if (gehoert.includes("video speichern")) {
-                antwortText = "sieg heil";
+                antwortText = "speichern nicht möglich";
                 boxFarbe = "#fff3cd";
             } else if (gehoert.includes("f*** deine mutter")) {
                 antwortText = "deine auch";
