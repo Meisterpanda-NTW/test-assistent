@@ -214,7 +214,7 @@ if (!Recognition) {
                 textFarbe = "#856404";
                 spieleCantinaSong(); 
             } else if (gehoert.includes("beenden") || gehoert.includes("stopp")) {
-                antwortText = "Musik gestoppt, programm wird beendet";
+                antwortText = "Programm wird beendet";
                 boxFarbe = "#d1ecf1";
                 audioPlayer.pause(); 
                 rec.stop();
