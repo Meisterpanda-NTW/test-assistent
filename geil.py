@@ -168,6 +168,9 @@ if (!Recognition) {
             } else if (gehoert.includes("fick dich")) {
                 antwortText = "dich auch";
                 boxFarbe = "#fff3cd";
+            } else if (gehoert.includes("f*** dich")) {
+                antwortText = "dich auch";
+                boxFarbe = "#fff3cd";                
             } else if (gehoert.includes("lukas")) {
                 antwortText = "nein nicht lukas";
                 boxFarbe = "#f8d7da";
