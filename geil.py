@@ -199,7 +199,7 @@ if (!Recognition) {
                 antwortText = "Hölle gefunden 48°27'22.2 Nord 12°21'35.9 Ost";
                 boxFarbe = "#f8d7da";
             } else if (gehoert.includes("macht")) { 
-                antwortText = "Möge die Macht mit dir sein.";
+                antwortText = "Möge die Macht auch mit dir sein.";
                 boxFarbe = "#d1ecf1";
                 spieleStarWars();
             } else if (gehoert.includes("duel of fates") || gehoert.includes("schicksal") || gehoert.includes("episode 1")) { 
