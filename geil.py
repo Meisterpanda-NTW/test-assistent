@@ -190,7 +190,7 @@ if (!Recognition) {
                 antwortText = "schnupf mehr";
                 boxFarbe = "#fff3cd";
             } else if (gehoert.includes("befehle")) {
-                antwortText = "Befehle lauten: Hallo, video speichern, traubenzucker, schule, starwars, episode 1, episode 4, beenden";
+                antwortText = "Befehle lauten: Hallo, video speichern, traubenzucker, schule, episode 1, episode 4, beenden";
                 boxFarbe = "#fff3cd";                
             } else if (gehoert.includes("sieg heil")) {
                 antwortText = "heil hitler";
