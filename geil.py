@@ -156,7 +156,7 @@ if (!Recognition) {
         let boxFarbe = "#e2e2e2";
         let textFarbe = "#333";
 
-        if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) {
+        if (gehoert.includes("okay garmin") || gehoert.includes("ok garmin") || gehoert.includes("okay gar")) || gehoert.includes("alexa)) {
             
             machPiep(); 
             
